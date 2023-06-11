@@ -44,18 +44,18 @@
 
             const jokeCount = 1000; // Number of jokes to generate
 
+            const callbackName = 'jsonpCallback';
+            window[callbackName] = function(data) {
+                const jokeText = data.setup ? `${data.setup} ${data.delivery}` : data.joke;
+                const jokeElement = document.createElement('p');
+                jokeElement.innerText = jokeText;
+                jokeContainer.appendChild(jokeElement);
+            };
+
             for (let i = 0; i < jokeCount; i++) {
-                fetch('https://v2.jokeapi.dev/joke/Any')
-                    .then(response => response.json())
-                    .then(data => {
-                        const jokeText = data.setup ? `${data.setup} ${data.delivery}` : data.joke;
-                        const jokeElement = document.createElement('p');
-                        jokeElement.innerText = jokeText;
-                        jokeContainer.appendChild(jokeElement);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching joke:', error);
-                    });
+                const scriptElement = document.createElement('script');
+                scriptElement.src = `https://v2.jokeapi.dev/joke/Any?format=jsonp&callback=${callbackName}`;
+                document.body.appendChild(scriptElement);
             }
         }
     </script>
