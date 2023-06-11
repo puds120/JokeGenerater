@@ -42,16 +42,23 @@
             const jokeContainer = document.getElementById('joke-container');
             jokeContainer.innerHTML = 'Loading...';
 
-            fetch('https://v2.jokeapi.dev/joke/Any')
-                .then(response => response.json())
-                .then(data => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://v2.jokeapi.dev/joke/Any', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
                     const jokeText = data.setup ? `${data.setup} ${data.delivery}` : data.joke;
                     jokeContainer.innerHTML = jokeText;
-                })
-                .catch(error => {
-                    console.error('Error fetching joke:', error);
+                } else {
+                    console.error('Error fetching joke. Status:', xhr.status);
                     jokeContainer.innerHTML = 'Error fetching joke.';
-                });
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Error fetching joke. Network error.');
+                jokeContainer.innerHTML = 'Error fetching joke.';
+            };
+            xhr.send();
         }
     </script>
 </body>
